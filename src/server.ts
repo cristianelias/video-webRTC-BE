@@ -1,14 +1,14 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import http from "http";
+import { createServer } from "http";
+import { Server, Socket } from "socket.io";
 
 dotenv.config();
 
 const app: Express = express();
-const httpServer = http.createServer(app);
+const httpServer = createServer(app);
 
-import { Server as SocketIOServer, Socket } from "socket.io";
-const io = new SocketIOServer(httpServer, {
+const io = new Server(httpServer, {
   cors: {
     origin: ["http://localhost:5173", "https://video-webrtc-fe.onrender.com"],
     credentials: true,
@@ -24,11 +24,11 @@ if (
 }
 
 const httpPort = parseInt(process.env.HTTP_PORT);
-const webSocketPort = parseInt(process.env.WEBSOCKET_PORT);
-io.listen(webSocketPort);
+// const webSocketPort = parseInt(process.env.WEBSOCKET_PORT);
+// io.listen(webSocketPort);
 
-app.listen(httpPort, () => {
-  console.log(`🐙 Server is running at http://localhost:${httpPort}`);
+httpServer.listen(httpPort, () => {
+  console.log(`🐙 HTTP server is running on port: ${httpPort}`);
 });
 
 type Message = {
