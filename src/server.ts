@@ -12,6 +12,7 @@ const io = new SocketIOServer(httpServer, {
   cors: {
     origin: ["http://localhost:5173/", "https://video-webrtc-fe.onrender.com/"],
     credentials: true,
+    methods: ["GET", "POST"],
   },
 });
 
