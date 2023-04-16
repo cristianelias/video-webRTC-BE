@@ -1,15 +1,38 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
+import http from "http";
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT;
+const httpServer = http.createServer(app);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
+import { Server as SocketIOServer, Socket } from "socket.io";
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: "*",
+  },
 });
 
-app.listen(port, () => {
-  console.log(`🐙 Server is running at http://localhost:${port}`);
+if (
+  process.env.HTTP_PORT === undefined ||
+  process.env.WEBSOCKET_PORT === undefined
+) {
+  throw new Error("🫠 Oh no! You forgot to set the PORT environment variable!");
+}
+
+const httpPort = parseInt(process.env.HTTP_PORT);
+const webSocketPort = parseInt(process.env.WEBSOCKET_PORT);
+io.listen(webSocketPort);
+
+app.listen(httpPort, () => {
+  console.log(`🐙 Server is running at http://localhost:${httpPort}`);
+});
+
+io.on("connection", (socket: Socket) => {
+  console.log("a user connected");
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
 });
