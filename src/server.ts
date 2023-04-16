@@ -10,7 +10,7 @@ const httpServer = http.createServer(app);
 import { Server as SocketIOServer, Socket } from "socket.io";
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: ["http://localhost:5173/", "https://video-webrtc-fe.onrender.com/"],
+    origin: ["http://localhost:5173", "https://video-webrtc-fe.onrender.com"],
     credentials: true,
     methods: ["GET", "POST"],
   },
