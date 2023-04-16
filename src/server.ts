@@ -29,10 +29,24 @@ app.listen(httpPort, () => {
   console.log(`🐙 Server is running at http://localhost:${httpPort}`);
 });
 
+type Message = {
+  authorName: string;
+  authorId: string;
+  content: string;
+};
+
 io.on("connection", (socket: Socket) => {
+  const messages = <Message[]>[];
+
   console.log("a user connected");
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
+  });
+
+  socket.on("message", (payload) => {
+    console.log(payload);
+
+    io.emit("message", payload);
   });
 });
