@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "nodemon --watch '**/*.ts' --exec 'ts-node' src/server.ts",
-    "build": "tsc --build",
+    "build": "./node_modules/typescript/bin/tsc --build",
     "clean": "rimraf ./dist",
     "prod": "yarn clean && yarn build && node dist/server.js"
   },
