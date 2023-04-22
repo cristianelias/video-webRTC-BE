@@ -16,16 +16,11 @@ const io = new Server(httpServer, {
   },
 });
 
-if (
-  process.env.HTTP_PORT === undefined ||
-  process.env.WEBSOCKET_PORT === undefined
-) {
+if (process.env.HTTP_PORT === undefined) {
   throw new Error("🫠 Oh no! You forgot to set the PORT environment variable!");
 }
 
 const httpPort = parseInt(process.env.HTTP_PORT);
-// const webSocketPort = parseInt(process.env.WEBSOCKET_PORT);
-// io.listen(webSocketPort);
 
 httpServer.listen(httpPort, () => {
   console.log(`🐙 HTTP server is running on port: ${httpPort}`);
