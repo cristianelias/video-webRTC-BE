@@ -2,9 +2,10 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import { Message } from "./messages/types";
-import { getUsernameFromSocket } from "./utils/utils";
+import { MessageFromClient } from "./messages/types";
+import { getUsernameFromSocket } from "./users/utils";
 import { UsersStore } from "./users/UsersStore";
+import { initMessage } from "./messages/utils";
 
 dotenv.config();
 
@@ -43,8 +44,10 @@ io.on("connection", (socket: Socket) => {
     unRegisterUser(socket);
   });
 
-  socket.on("message", (payload: Message) => {
-    io.emit("message", payload);
+  socket.on("message", (payload: MessageFromClient) => {
+    const messageFromServer = initMessage(payload);
+
+    io.emit("message", messageFromServer);
   });
 });
 
@@ -53,12 +56,7 @@ const registerUser = (socket: Socket) => {
 
   console.log(`${username} just connected to the session!`);
 
-  const user = {
-    name: username,
-    id: socket.id,
-  };
-
-  usersStore.addUser(user);
+  usersStore.addUser(username, socket.id);
   socket.broadcast.emit("users", usersStore.getUsers());
   socket.emit("users", usersStore.getUsers());
 };

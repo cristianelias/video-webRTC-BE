@@ -1,13 +1,12 @@
-export interface PublicMessage {
+export type MessageFromClient = {
   id: string;
   username: string;
   content: string;
-  timeStamp: number;
-}
+  public: boolean;
+  to?: string;
+  from?: string;
+};
 
-export interface PrivateMessage {
-  to: string;
-  from: string;
-}
-
-export type Message = PublicMessage | PrivateMessage;
+export type Message = {
+  timestamp: string;
+} & MessageFromClient;
