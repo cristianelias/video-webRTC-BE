@@ -53,12 +53,12 @@ io.on("connection", (socket: Socket) => {
 
 const registerUser = (socket: Socket) => {
   const username = getUsernameFromSocket(socket);
+  usersStore.addUser(username, socket.id);
+  const users = usersStore.getUsers();
 
   console.log(`${username} just connected to the session!`);
-
-  usersStore.addUser(username, socket.id);
-  socket.broadcast.emit("users", usersStore.getUsers());
-  socket.emit("users", usersStore.getUsers());
+  socket.emit("users", users); // send the current user list to the new user
+  socket.broadcast.emit("users", users); // send the updated user list to other users
 };
 
 const unRegisterUser = (socket: Socket) => {
@@ -67,5 +67,5 @@ const unRegisterUser = (socket: Socket) => {
   console.log(`${username} disconnected from the session!`);
 
   usersStore.removeUser(socket.id);
-  socket.broadcast.emit("users", usersStore.getUsers());
+  socket.broadcast.emit("users", usersStore.getUsers()); // send the updated user list to other users
 };
