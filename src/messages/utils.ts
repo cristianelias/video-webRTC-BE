@@ -1,3 +1,4 @@
+import { uuid } from "uuidv4";
 import { MessageFromClient } from "./types";
 
 export const initMessage = (fromClient: MessageFromClient) => {
@@ -8,5 +9,6 @@ export const initMessage = (fromClient: MessageFromClient) => {
   return {
     ...fromClient,
     timestamp: new Date().toISOString(),
+    id: uuid(),
   };
 };

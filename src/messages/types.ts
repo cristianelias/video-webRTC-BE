@@ -1,12 +1,12 @@
 export type MessageFromClient = {
-  id: string;
-  username: string;
   content: string;
+  authorUsername: string;
+  authorId: string;
   public: boolean;
-  to?: string;
-  from?: string;
+  to: string | null;
 };
 
 export type Message = {
   timestamp: string;
+  id: string;
 } & MessageFromClient;

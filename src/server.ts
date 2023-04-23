@@ -35,11 +35,6 @@ const usersStore = new UsersStore();
 io.on("connection", (socket: Socket) => {
   registerUser(socket);
 
-  // For debugging purposes
-  socket.onAny((event, ...args) => {
-    console.log(event, args);
-  });
-
   socket.on("disconnect", () => {
     unRegisterUser(socket);
   });
@@ -48,6 +43,8 @@ io.on("connection", (socket: Socket) => {
     const messageFromServer = initMessage(payload);
 
     io.emit("message", messageFromServer);
+
+    console.log("emitted message", messageFromServer);
   });
 });
 
