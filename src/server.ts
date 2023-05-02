@@ -3,16 +3,18 @@ import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { MessageFromClient } from "./messages/types";
-import { getUsernameFromSocket } from "./users/utils";
-import { UsersStore } from "./users/UsersStore";
-import { initMessage } from "./messages/utils";
+import { handleMessage } from "./messages/handlers";
+import {
+  handleUserConnection,
+  handleUserDisconnection,
+} from "./users/handlers";
 
 dotenv.config();
 
 const app: Express = express();
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
   cors: {
     origin: ["http://localhost:5173", "https://video-webrtc-fe.onrender.com"],
     credentials: true,
@@ -30,39 +32,12 @@ httpServer.listen(httpPort, () => {
   console.log(`🐙 HTTP server is running on port: ${httpPort}`);
 });
 
-const usersStore = new UsersStore();
-
 io.on("connection", (socket: Socket) => {
-  registerUser(socket);
+  handleUserConnection(socket);
 
-  socket.on("disconnect", () => {
-    unRegisterUser(socket);
-  });
+  socket.on("disconnect", () => handleUserDisconnection(socket));
 
-  socket.on("message", (payload: MessageFromClient) => {
-    const messageFromServer = initMessage(payload);
-
-    io.emit("message", messageFromServer);
-
-    console.log("emitted message", messageFromServer);
-  });
+  socket.on("message", (payload: MessageFromClient) =>
+    handleMessage(socket, payload)
+  );
 });
-
-const registerUser = (socket: Socket) => {
-  const username = getUsernameFromSocket(socket);
-  usersStore.addUser(username, socket.id);
-  const users = usersStore.getUsers();
-
-  console.log(`${username} just connected to the session!`);
-  socket.emit("users", users); // send the current user list to the new user
-  socket.broadcast.emit("users", users); // send the updated user list to other users
-};
-
-const unRegisterUser = (socket: Socket) => {
-  const username = getUsernameFromSocket(socket);
-
-  console.log(`${username} disconnected from the session!`);
-
-  usersStore.removeUser(socket.id);
-  socket.broadcast.emit("users", usersStore.getUsers()); // send the updated user list to other users
-};

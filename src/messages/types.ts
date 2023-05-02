@@ -4,6 +4,7 @@ export type MessageFromClient = {
   authorId: string;
   public: boolean;
   to: string | null;
+  from: string | null;
 };
 
 export type Message = {
